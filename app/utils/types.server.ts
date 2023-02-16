@@ -8,3 +8,6 @@ export interface RegisterForm {
   password: string
   userName: string
 }
+
+
+// make more tyhpes
