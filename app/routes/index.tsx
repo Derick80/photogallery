@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { ChevronRightIcon, ChevronLeftIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
-import { json, LoaderArgs } from '@remix-run/node'
-import invariant from 'tiny-invariant'
-import { bucketItems } from '~/utils/s3.server'
+import type { LoaderArgs } from '@remix-run/node';
+import { json } from '@remix-run/node'
 import { useLoaderData } from 'react-router'
 import { prisma } from '~/utils/prisma.server'
-import { Link, NavLink } from '@remix-run/react'
+import {  NavLink } from '@remix-run/react'
 import { useOptionalUser } from '~/lib/app-utils'
 import Layout from '~/components/shared/layout'
 export async function loader(request: LoaderArgs){
