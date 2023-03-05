@@ -7,40 +7,26 @@ import { prisma } from '~/utils/prisma.server'
 import {  NavLink } from '@remix-run/react'
 import { useOptionalUser } from '~/lib/app-utils'
 import Layout from '~/components/shared/layout'
+import LikeContainer from '~/components/like-container'
+import type{ Like } from '~/utils/schemas/like-schema'
 export async function loader(request: LoaderArgs){
 
-//   const data = await bucketItems()
-// invariant(data, 'data is required')
-// const contents = data.Contents
-// invariant(contents, 'contents is required')
+const photos = await prisma.photos.findMany({
+  orderBy:{
+    createdAt: 'desc'
 
-//  console.log(contents);
-
-// const urllinks = contents.map((item) => {
-//   return  `https://japan2023.s3.us-east-2.amazonaws.com/${item.Key}`
-
-// })
-
-// function getLinks(array: Array<string>, key:string){
-
-// const newLinks = array.filter((item) => item.includes(key))
-
-// const fixed = newLinks.filter((item)=> !item.includes('MP4' || 'mp4'))
-
-// return fixed.map((item)=> {
-// return {
-//   imageUrl: item,
-//   city: key,
-//   description: 'description',
-//   title: 'title'
-// }
-// })
-// }
-
-// const tokyotwo = getLinks(urllinks, 'tokyotwo')
-
-// console.log(tokyotwo, 'tokyotwo')
-const photos = await prisma.photos.findMany()
+  },
+  include:{
+    _count:{
+      select:{
+        likes: true
+      }
+    },
+    likes: true,
+    user: true
+  }
+})
+console.log(photos, 'photos');
 
   return json({photos})
 
@@ -49,10 +35,9 @@ const photos = await prisma.photos.findMany()
 
 export default function Index() {
   const user = useOptionalUser()
-  // const data = useLoaderData() as { kanazawa: Array<{ links: string, city: string, description: string, title: string }> }
-  // console.log(data.kanazawa)
 
-  const data = useLoaderData() as { photos: Array<{id:string, imageUrl: string, city: string, description: string, title: string }>
+
+  const data = useLoaderData() as { photos: Array<{id:string, imageUrl: string, city: string, description: string, title: string, likes: Like[] }>
   }
 
 
@@ -84,7 +69,14 @@ export default function Index() {
       >
       </div>
       <div className='flex flex-row items-center justify-center'>
-      {/* <p>{data.photos[currentIndex].title}</p> */}
+      <p>{data.photos[currentIndex].title}</p>
+<LikeContainer
+        likes={data.photos[currentIndex].likes}
+        likeCounts={data.photos[currentIndex].likes.length}
+        currentUser={user?.id}
+        photoId={data.photos[currentIndex].id}
+      />
+
      {user &&  <NavLink to={`/${data.photos[currentIndex].id}`}>
       <button className='bg-black text-white rounded-md px-4 py-2 ml-4'>Edit</button>
       </NavLink>
