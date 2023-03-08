@@ -9,5 +9,4 @@ export interface RegisterForm {
   userName: string
 }
 
-
 // make more tyhpes

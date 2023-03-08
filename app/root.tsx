@@ -20,9 +20,9 @@ export const meta: MetaFunction = () => ({
   viewport: 'width=device-width,initial-scale=1'
 })
 
-export async function loader({request}:LoaderArgs){
-const user = await getUser(request)
-return json({user})
+export async function loader({ request }: LoaderArgs) {
+  const user = await getUser(request)
+  return json({ user })
 }
 export default function App() {
   const data = useLoaderData<typeof loader>()

@@ -10,62 +10,59 @@ if (!(ACCESS_KEY_ID && SECRET_ACCESS_KEY && BUCKET_REGION && BUCKET_NAME)) {
 }
 // s3.server.ts
 const s3Client = new AWS.S3({
+  credentials: {
+    accessKeyId: ACCESS_KEY_ID,
+    secretAccessKey: SECRET_ACCESS_KEY
+  },
+  region: BUCKET_REGION
+})
+
+export const bucketItems = async () => {
+  try {
+    const data = await s3Client.listObjectsV2({ Bucket: 'japan2023' }).promise()
+    return data
+  } catch (err) {
+    console.log(err)
+  }
+}
+const uploadStream = ({ Key }: Pick<AWS.S3.Types.PutObjectRequest, 'Key'>) => {
+  const s3 = new AWS.S3({
     credentials: {
       accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY,
+      secretAccessKey: SECRET_ACCESS_KEY
     },
-    region:BUCKET_REGION,
-  });
-
-  export const bucketItems = async ()=>{
-    try{
-      const data = await s3Client.listObjectsV2({Bucket: 'japan2023'}).promise();
-      return data
-    }
-
-    catch(err){
-      console.log(err)
-    }
+    region: BUCKET_REGION
+  })
+  const pass = new PassThrough()
+  return {
+    writeStream: pass,
+    promise: s3
+      .upload({
+        Bucket: BUCKET_NAME,
+        Key,
+        Body: pass
+      })
+      .promise()
   }
-  const uploadStream = ({ Key }: Pick<AWS.S3.Types.PutObjectRequest, 'Key'>) => {
-    const s3 = new AWS.S3({
-      credentials: {
-        accessKeyId: ACCESS_KEY_ID,
-        secretAccessKey: SECRET_ACCESS_KEY
-      },
-      region: BUCKET_REGION
-    })
-    const pass = new PassThrough()
-    return {
-      writeStream: pass,
-      promise: s3
-        .upload({
-          Bucket: BUCKET_NAME,
-          Key,
-          Body: pass
-        })
-        .promise()
-    }
-  }
+}
 
-  export async function uploadStreamToS3(data: any, filename: string) {
-    const stream = uploadStream({
-      Key: filename
-    })
-    await writeAsyncIterableToWritable(data, stream.writeStream)
-    const file = await stream.promise
-    return file.Location
-  }
+export async function uploadStreamToS3(data: any, filename: string) {
+  const stream = uploadStream({
+    Key: filename
+  })
+  await writeAsyncIterableToWritable(data, stream.writeStream)
+  const file = await stream.promise
+  return file.Location
+}
 
-  export const s3UploadHandler: UploadHandler = async ({
-    name,
-    filename,
-    data
-  }) => {
-    if (name !== 'imageUrl') {
-      return undefined
-    }
-    const uploadedFileLocation = await uploadStreamToS3(data, filename!)
-    return uploadedFileLocation
+export const s3UploadHandler: UploadHandler = async ({
+  name,
+  filename,
+  data
+}) => {
+  if (name !== 'imageUrl') {
+    return undefined
   }
-
+  const uploadedFileLocation = await uploadStreamToS3(data, filename!)
+  return uploadedFileLocation
+}

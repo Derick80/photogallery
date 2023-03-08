@@ -1,4 +1,9 @@
-import { ActivityLogIcon, HeartFilledIcon, HeartIcon } from '@radix-ui/react-icons'
+import {
+  ActivityLogIcon,
+  EnterIcon,
+  HeartFilledIcon,
+  HeartIcon
+} from '@radix-ui/react-icons'
 import type { FormMethod } from '@remix-run/react'
 import { NavLink, useFetcher } from '@remix-run/react'
 import { useState } from 'react'
@@ -24,7 +29,7 @@ export default function LikeContainer({
     ? true
     : false
 
-  const [likeCount, setLikeCount] = useState(likes.length    )
+  const [likeCount, setLikeCount] = useState(likes.length)
   const [isLiked, setIsLiked] = useState(userLikedPost)
 
   const toggleLike = async () => {
@@ -69,7 +74,7 @@ export default function LikeContainer({
             to='/login'
             style={{ textDecoration: 'none', color: 'currentcolor' }}
           >
-            <ActivityLogIcon />
+<EnterIcon />
           </NavLink>
         </>
       )}

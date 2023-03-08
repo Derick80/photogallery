@@ -15,7 +15,7 @@ export const createUser = async (user: RegisterForm) => {
     data: {
       email: user.email,
 
-      password:user.password,
+      password: user.password,
       userName: user.userName
     }
   })
@@ -99,8 +99,7 @@ export const createUserSession = async (userId: string, redirectTo: string) => {
 
 export const login = async (form: LoginForm) => {
   const user = await prisma.user.findUnique({
-    where: { email: form.email },
-
+    where: { email: form.email }
   })
   invariant(user, 'User not found')
   const hash = user.password

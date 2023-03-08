@@ -2,7 +2,6 @@ import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import invariant from 'tiny-invariant'
 
-
 import type { MetaFunction } from '@remix-run/node' // or cloudflare/deno
 import { getUser } from '~/utils/user.server'
 import { createLike, deleteLike } from '~/utils/likes.server'
@@ -47,7 +46,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     }
 
     if (request.method === 'DELETE') {
-      await deleteLike({ userId,  photoId })
+      await deleteLike({ userId, photoId })
     }
 
     return json({ success: true })
